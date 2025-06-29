@@ -15,7 +15,43 @@ $config = [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'Q2VBCBX79JSmt07XDDnjL-U3Mr6u5P7l',
-            'baseUrl' => ''
+            'baseUrl' => '',
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+                'multipart/form-data' => 'yii\web\MultipartFormDataParser'
+            ]
+        ],
+        'response' => [
+            'format' => yii\web\Response::FORMAT_JSON,
+            'charset' => 'UTF-8',
+            'class' => 'yii\web\Response',
+            'on beforeSend' => function ($event) {
+                $response = $event->sender;
+                if ($response->statusCode == 404) {
+                    $response->data = [
+                        'message' => 'no found',
+                    ];
+                }
+                if ($response->statusCode == 401) {
+                    $response->data = [
+                        'message' => 'logi failed',
+                    ];
+                }
+                if ($response->statusCode == 403) {
+                    $response->data = [
+                        'message' => 'forbidden for you',
+                    ];
+                }
+            },
+            // ...
+            'formatters' => [
+                \yii\web\Response::FORMAT_JSON => [
+                    'class' => 'yii\web\JsonResponseFormatter',
+                    'prettyPrint' => YII_DEBUG, // use "pretty" output in debug mode
+                    'encodeOptions' => JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+                    // ...
+                ],
+            ],
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -23,6 +59,7 @@ $config = [
         'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
+            'enableSession' => false
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -49,6 +86,10 @@ $config = [
             'showScriptName' => false,
             'rules' => [
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
+                'POST api/register' => 'user/register',
+                'OPTIONS api/register' => 'user/options',
+                'POST api/login' => 'user/login',
+                'OPTIONS api/login' => 'user/options'
             ],
         ]
     ],
