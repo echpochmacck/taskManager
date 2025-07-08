@@ -34,7 +34,7 @@ $config = [
                 }
                 if ($response->statusCode == 401) {
                     $response->data = [
-                        'message' => 'logi failed',
+                        'message' => 'login failed',
                     ];
                 }
                 if ($response->statusCode == 403) {
@@ -85,11 +85,33 @@ $config = [
             'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
                 'POST api/register' => 'user/register',
                 'OPTIONS api/register' => 'user/options',
                 'POST api/login' => 'user/login',
-                'OPTIONS api/login' => 'user/options'
+                'OPTIONS api/login' => 'user/options',
+                'GET api/logout' => 'user/logout',
+                'OPTIONS api/logout' => 'user/options',
+                'GET api/tasks/users' => 'user/get-users',
+                'OPTIONS api/users' => 'user/options',
+                // Task routes
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'prefix' => 'api',
+                    'controller' => 'task',
+                    'pluralize' => true,
+                    'extraPatterns' => [
+                        'POST new' => 'create',
+                        'OPTIONS new' => 'options',
+                        'GET' => 'get-tasks',
+                        'OPTIONS' => 'options',
+                        'PATCH status/<id>/<status_id>' => 'change-status',
+                        'OPTIONS status/<id>/<status_id>' => 'options',
+                    ]
+                ],
+                // Statuses
+                'GET api/statuses' => 'status/get-all',
+                'OPTIONS api/statuses' => 'status/options'
+
             ],
         ]
     ],

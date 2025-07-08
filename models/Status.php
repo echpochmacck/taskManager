@@ -43,5 +43,17 @@ class Status extends \yii\db\ActiveRecord
             'title' => 'Title',
         ];
     }
-
+    public static function getStatusId(string $task)
+    {
+        return self::findOne(['title' => $task])->id;
+    }
+    public static function getQuery($data = [])
+    {
+        $query = Status::find()
+            ->select(['title', 'id']);
+        if (isset($data['id'])) {
+            $query->andFilterWhere(['status.id' => $data['id']]);
+        };
+        return $query;
+    }
 }

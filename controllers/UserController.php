@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\User;
 use yii\filters\Cors;
 use Yii;
+use yii\filters\auth\HttpBearerAuth;
 
 class UserController extends \yii\rest\ActiveController
 {
@@ -33,8 +34,13 @@ class UserController extends \yii\rest\ActiveController
             ]
         ];
 
+        $auth = [
+            'class' => HttpBearerAuth::class,
+            'only' => ['logout']
+        ];
         // re-add authentication filter
         $behaviors['authenticator'] = $auth;
+
         // avoid authentication on CORS-pre-flight requests (HTTP OPTIONS method)
         $behaviors['authenticator']['except'] = ['options'];
 
@@ -104,5 +110,27 @@ class UserController extends \yii\rest\ActiveController
                 'message' => 'validation error'
             ]);
         }
+    }
+    public function actionLogout()
+    {
+        $user = User::findOne(Yii::$app->user->id);
+        $user->token = null;
+        $user->save(false);
+        Yii::$app->response->statusCode = 204;
+        return '';
+    }
+    public function actionGetUsers()
+    {
+        return $this->asJson([
+            'data' => [
+                'users' => User::find()
+                            ->select(['email', 'id'])
+                            ->asArray()
+                            ->all()
+
+            ],
+            'code' => 200,
+            'message' => 'list of users'
+        ]);
     }
 }
