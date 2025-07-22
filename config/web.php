@@ -102,8 +102,11 @@ $config = [
                     'extraPatterns' => [
                         'POST new' => 'create',
                         'OPTIONS new' => 'options',
-                        'GET' => 'get-tasks',
+                        'GET' => 'get-all',
                         'OPTIONS' => 'options',
+                        'GET sub/<id>' => 'sub',
+                        'OPTIONS sub/<id>' => 'options',
+
                         'PATCH status/<id>/<status_id>' => 'change-status',
                         'OPTIONS status/<id>/<status_id>' => 'options',
                     ]

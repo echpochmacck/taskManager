@@ -8,27 +8,32 @@ use yii\db\ActiveRecord;
 use yii\db\Expression;
 
 /**
- * This is the model class for table "Task".
+ * This is the model class for table "task".
  *
  * @property int $id
- * @property int $user_id
  * @property int $status_id
  * @property int $category_id
  * @property string $deadline
  * @property string $created_at
  * @property string $title
- * @property string $description
+ * @property string|null $description
+ *
+ * @property Category $category
+ * @property Status $status
+ * @property TaskUser[] $taskUsers
+ * @property User $user
  */
 class Task extends \yii\db\ActiveRecord
 {
 
+    public array $users = [];
 
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'Task';
+        return 'task';
     }
 
     /**
@@ -37,14 +42,14 @@ class Task extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'category_id', 'deadline', 'title'], 'required'],
-            ['deadline', 'date', 'format' => 'php:Y-m-d'],
-            [['title', 'description'], 'string', 'max' => 255],
-            [['user_id', 'status_id', 'category_id', 'description'], 'integer'],
+            [['description'], 'default', 'value' => null],
+            [['category_id', 'deadline', 'title'], 'required'],
+            [['status_id', 'category_id'], 'integer'],
             [['deadline', 'created_at'], 'safe'],
+            [['title', 'description'], 'string', 'max' => 255],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'id']],
             [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => Status::class, 'targetAttribute' => ['status_id' => 'id']],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id'], 'message' => "such user doesn't exist"],
+            [['users'], 'each', 'rule' => ['exist', 'skipOnError' => false, 'targetClass' => User::class, 'targetAttribute' => 'id', 'message' => 'такого пользователя не сущетвует'], 'on' => ['register']],
         ];
     }
 
@@ -60,9 +65,50 @@ class Task extends \yii\db\ActiveRecord
             'category_id' => 'Category ID',
             'deadline' => 'Deadline',
             'created_at' => 'Created At',
+            'title' => 'Title',
+            'description' => 'Description',
         ];
     }
 
+    /**
+     * Gets query for [[Category]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCategory()
+    {
+        return $this->hasOne(Category::class, ['id' => 'category_id']);
+    }
+
+    /**
+     * Gets query for [[Status]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStatus()
+    {
+        return $this->hasOne(Status::class, ['id' => 'status_id']);
+    }
+
+    /**
+     * Gets query for [[TaskUsers]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTaskUsers()
+    {
+        return $this->hasMany(TaskUser::class, ['task_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[User]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
     public function behaviors()
     {
         return [
@@ -71,10 +117,41 @@ class Task extends \yii\db\ActiveRecord
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => ['created_at'],
                 ],
-                // if you're using datetime instead of UNIX timestamp:
                 'value' => new Expression('NOW()'),
             ],
         ];
     }
 
+    // получение всех тасков + пользователей без многочисл запросов к бд
+    public static function getAll()
+    {
+        $tasks = Self::find()
+            ->select([
+                'task.*',
+                'category.title',
+                'status.title',
+            ])
+            ->innerJoin('category', 'category.id = task.category_id')
+            ->innerJoin('status', 'status.id = task.status_id')
+            ->asArray()
+            ->all();
+        $users = TaskUser::find()
+            ->select([
+                'email',
+                'task_id',
+            ])
+            ->innerJoin('user', 'user.id = task_user.user_id')
+            ->asArray()
+            ->all();
+
+        $user_arr = [];
+        foreach ($users as $user) {
+            $user_arr[$user['task_id']][] = $user;
+        }
+        // var_dump($user_arr[8]);die;
+        return array_map(function ($val) use ($user_arr) {
+            $val['users'] = $user_arr[$val['id']] ?? null;
+            return $val;
+        }, $tasks);
+    }
 }
