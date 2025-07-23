@@ -154,4 +154,91 @@ class Task extends \yii\db\ActiveRecord
             return $val;
         }, $tasks);
     }
+    public static function getUsersAll($id)
+    {
+
+
+        // получение всех task_id где есть этот пользователь
+        $userTaskIds = TaskUser::find()
+            ->select([
+                'task_id',
+            ])
+            ->innerJoin('user', 'user.id = task_user.user_id')
+            ->where(['user_id' => $id])
+            ->asArray()
+            ->all();
+
+
+            // все таски
+        $tasks = Self::find()
+            ->select([
+                'task.*',
+                'category.title',
+                'status.title',
+            ])
+            ->innerJoin('category', 'category.id = task.category_id')
+            ->innerJoin('status', 'status.id = task.status_id')
+            ->asArray()
+            ->all();
+        $filter = [];
+
+        // убираем лишние таски
+        foreach ($tasks as $task) {
+            foreach ($userTaskIds as $task_id) {
+                if ($task['id'] == $task_id['task_id']) {
+                    $filter[] = $task;
+                }
+            }
+        }
+        $users = TaskUser::find()
+            ->select([
+                'email',
+                'task_id',
+            ])
+            ->innerJoin('user', 'user.id = task_user.user_id')
+            ->asArray()
+            ->all();
+
+        $user_arr = [];
+        foreach ($users as $user) {
+            $user_arr[$user['task_id']][] = $user;
+        }
+        // var_dump($user_arr[8]);die;
+        return array_map(function ($val) use ($user_arr) {
+            $val['users'] = $user_arr[$val['id']] ?? null;
+            return $val;
+        }, $filter);
+    }
+
+
+
+    public static function getOne($id)
+    {
+        $task = Self::find()
+            ->select([
+                'task.*',
+                'category.title',
+                'status.title',
+            ])
+            ->innerJoin('category', 'category.id = task.category_id')
+            ->innerJoin('status', 'status.id = task.status_id')
+            ->where(['task.id' => $id])
+            ->asArray()
+            ->all();
+        if (!$task) {
+            return null;
+        }
+        $users = TaskUser::find()
+            ->select([
+                'email',
+                'task_id',
+            ])
+            ->innerJoin('user', 'user.id = task_user.user_id')
+            ->where(['task_id' => $id])
+            ->asArray()
+            ->all();
+
+        $task['users'] = $users;
+        return $task;
+    }
 }

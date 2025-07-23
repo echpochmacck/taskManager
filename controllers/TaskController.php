@@ -36,12 +36,16 @@ class TaskController extends \yii\rest\ActiveController
                 'sub' => [
                     'Access-Control-Allow-Credentials' => true,
                 ],
+                'get-user-tasks' => [
+                    'Access-Control-Allow-Credentials' => true,
+
+                ]
             ]
         ];
 
         $auth = [
             'class' => HttpBearerAuth::class,
-            'only' => ['create', 'sub'],
+            'only' => ['create', 'sub', 'get-user-tasks'],
         ];
         // re-add authentication filter
         $behaviors['authenticator'] = $auth;
@@ -142,5 +146,34 @@ class TaskController extends \yii\rest\ActiveController
             Yii::$app->response->statusCode = 404;
             return '';
         }
+    }
+
+    public function actionGetTask($id)
+    {
+        $task = Task::getOne($id);
+        if ($task) {
+            return $this->asJson([
+                'data' => [
+                    'task' => $task
+
+                ]
+            ]);
+        } else {
+            Yii::$app->response->statusCode = 404;
+            return '';
+        }
+    }
+    public function actionGetUserTasks()
+    {
+        $tasks = Task::getUsersAll(Yii::$app->user->id);
+        return $this->asJson([
+            'data' => [
+                'tasks' => [
+                    !empty($tasks) ? $tasks : null
+                ]
+            ],
+            'code' => 200,
+            'message' => 'list of user tasks'
+        ]);
     }
 }
