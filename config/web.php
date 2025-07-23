@@ -109,8 +109,8 @@ $config = [
                         'GET user' => 'get-user-tasks',
                         'OPTIONS user' => 'options',
 
-                        'PATCH status/<id>/<status_id>' => 'change-status',
-                        'OPTIONS status/<id>/<status_id>' => 'options',
+                        'PUT status/<id>' => 'change-status',
+                        'OPTIONS status/<id>' => 'options',
                         'GET <id>' => 'get-task',
                         'OPTIONS <id>' => 'options',
                     ]

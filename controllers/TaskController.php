@@ -39,13 +39,17 @@ class TaskController extends \yii\rest\ActiveController
                 'get-user-tasks' => [
                     'Access-Control-Allow-Credentials' => true,
 
-                ]
+                ],
+                'change-status' => [
+                    'Access-Control-Allow-Credentials' => true,
+
+                ],
             ]
         ];
 
         $auth = [
             'class' => HttpBearerAuth::class,
-            'only' => ['create', 'sub', 'get-user-tasks'],
+            'only' => ['create', 'sub', 'get-user-tasks', 'change-status'],
         ];
         // re-add authentication filter
         $behaviors['authenticator'] = $auth;
@@ -175,5 +179,27 @@ class TaskController extends \yii\rest\ActiveController
             'code' => 200,
             'message' => 'list of user tasks'
         ]);
+    }
+
+    public function actionChangeStatus($id)
+    {
+        if (Yii::$app->user->identity->isAdmin) {
+            $task = Task::findOne($id);
+            $status = Status::findOne(Yii::$app->request->post('status_id'));
+            if ($task && $status) {
+                $task->status_id = $status->id;
+                $task->save(false);
+                return $this->asJson([
+                    'title' => 'status changed',
+                    'code' => 200
+                ]);
+            } else {
+                Yii::$app->response->statusCode = 404;
+                return '';
+            }
+        } else {
+            Yii::$app->response->statusCode = 403;
+            return '';
+        }
     }
 }
