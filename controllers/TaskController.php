@@ -88,6 +88,12 @@ class TaskController extends \yii\rest\ActiveController
                     $TaskUser->task_id = $model->id;
                     $TaskUser->save(false);
                 }
+                $redis = new \Redis();
+                $redis->connect('127.127.126.56', 6379);
+                $entryData = [
+                    'text' => 'new task is added'
+                ];
+                $redis->rPush('blog_channel', json_encode($entryData));
                 Yii::$app->response->statusCode = 201;
                 return $this->asJson([
                     'data' => [
