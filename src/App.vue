@@ -1,34 +1,49 @@
 <script setup>
   import {RouterLink, RouterView} from 'vue-router'
+  import {useUserStore} from '@/stores/user.js'
   import HelloWorld from './components/HelloWorld.vue'
+  const ws = new WebSocket('ws://localhost:8080');
+  const user = useUserStore();
+  ws.addEventListener('open', () => {
+    console.log('opened')
+  })
+  ws.addEventListener('message', (data) => {
+    console.log('got message')
+  })
 </script>
 
 <template>
-  <header>
 
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">Task Manager</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <router-link class="nav-link" to="/register">Register</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="/login">Login</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" href="#tasks">Tasks</router-link>
-            </li>
-          </ul>
-        </div>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top  border-bottom border-primary">
+    <div class="container">
+      <router-link class="navbar-brand" to="/">Task Manager</router-link>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item" v-if="!user.token">
+            <router-link class="nav-link" to="/register">Register</router-link>
+          </li>
+          <li class="nav-item" v-if="!user.token">
+            <router-link class="nav-link" :to="{name:
+              'login'}">Login</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" :to="{name:'tasks'}">Tasks</router-link>
+          </li>
+          <li class="nav-item" v-if="user.token">
+            <router-link class="nav-link" :to="{name:'user-tasks'}">My tasks</router-link>
+          </li>
+
+          <!-- <li class="nav-item" v-if="user.token">
+            <router-link class="nav-link" :to="{name:'admin-tasks'}">Admin</router-link> -->
+          <!-- </li> -->
+        </ul>
       </div>
-    </nav>
-  </header>
+    </div>
+  </nav>
 
   <RouterView />
 </template>
@@ -45,10 +60,9 @@
   }
 
   nav {
-    width: 100%;
     font-size: 12px;
     text-align: center;
-    margin-top: 2rem;
+    margin-top: 0rem !important;
   }
 
   nav a.router-link-exact-active {
