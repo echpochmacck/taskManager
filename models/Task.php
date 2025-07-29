@@ -128,8 +128,8 @@ class Task extends \yii\db\ActiveRecord
         $tasks = Self::find()
             ->select([
                 'task.*',
-                'category.title',
-                'status.title',
+                'category.title as category_title',
+                'status.title status_title',
             ])
             ->innerJoin('category', 'category.id = task.category_id')
             ->innerJoin('status', 'status.id = task.status_id')
@@ -169,12 +169,12 @@ class Task extends \yii\db\ActiveRecord
             ->all();
 
 
-            // все таски
+        // все таски
         $tasks = Self::find()
             ->select([
                 'task.*',
-                'category.title',
-                'status.title',
+                'category.title category_title',
+                'status.title as status_title',
             ])
             ->innerJoin('category', 'category.id = task.category_id')
             ->innerJoin('status', 'status.id = task.status_id')
