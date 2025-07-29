@@ -178,9 +178,9 @@ class TaskController extends \yii\rest\ActiveController
         $tasks = Task::getUsersAll(Yii::$app->user->id);
         return $this->asJson([
             'data' => [
-                'tasks' => [
+                'tasks' => 
                     !empty($tasks) ? $tasks : null
-                ]
+                
             ],
             'code' => 200,
             'message' => 'list of user tasks'
