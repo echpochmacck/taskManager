@@ -92,7 +92,8 @@ class UserController extends \yii\rest\ActiveController
                 return $this->asJson([
                     'data' => [
                         'token' => $user->token,
-                        'role' => $user->getRole()->one()->title
+                        'role' => $user->getRole()->one()->title,
+                        'email' => $user->email,
                     ],
                     'code' => 200
                 ]);

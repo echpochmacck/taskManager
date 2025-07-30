@@ -146,7 +146,7 @@ class Task extends \yii\db\ActiveRecord
 
         $user_arr = [];
         foreach ($users as $user) {
-            $user_arr[$user['task_id']][] = $user;
+            $user_arr[$user['task_id']][] = $user['email'];
         }
         // var_dump($user_arr[8]);die;
         return array_map(function ($val) use ($user_arr) {
@@ -201,7 +201,7 @@ class Task extends \yii\db\ActiveRecord
 
         $user_arr = [];
         foreach ($users as $user) {
-            $user_arr[$user['task_id']][] = $user;
+            $user_arr[$user['task_id']][] = $user['email'];
         }
         // var_dump($user_arr[8]);die;
         return array_map(function ($val) use ($user_arr) {
