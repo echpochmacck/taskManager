@@ -14,7 +14,7 @@
 
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
                 <div class="col" v-for="(task, index) in tasks" :key="index">
-                    <TaskCard :task="task" :users="task.users" />
+                    <TaskCard :task="task" :users="task.users" :email="user.email" :url="url" @fetchSub="fetchSub" />
                 </div>
             </div>
 
@@ -86,10 +86,30 @@
                 isLoading.value = false
 
             }
-        } catch {
+        } catch (e) {
             console.log(e)
         } finally {
             isLoading.value = false
+        }
+    }
+
+    async function fetchSub(id) {
+        try {
+            console.log(id)
+            const myHeaders = new Headers();
+            myHeaders.append("Authorization", "Bearer " + user.token);
+
+            const requestOptions = {
+                method: "GET",
+                headers: myHeaders,
+                redirect: "follow"
+            };
+            const result = await fetch(`${url.url}/api/tasks/sub/${id}`, requestOptions)
+            if (result.status > 199 && result.status < 300) {
+                fetchTasks()
+            }
+        } catch (e) {
+            console.log(e)
         }
     }
     onMounted(() => {
@@ -110,6 +130,7 @@
         border-radius: 50%;
         background-color: rgba(0, 128, 0, 0.1);
     }
+
     .new-box {
         width: 20px;
         height: 20px;

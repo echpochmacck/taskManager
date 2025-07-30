@@ -32,35 +32,44 @@
     const password = ref('123Da');
     const errors = ref({});
     async function login() {
-        clear(errors)
-        const myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
+        try {
 
-        const raw = JSON.stringify({
-            "email": email.value,
-            "password": password.value
-        });
+            clear(errors)
+            const myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
 
-        const requestOptions = {
-            method: "POST",
-            headers: myHeaders,
-            body: raw,
-            redirect: "follow"
-        };
+            const raw = JSON.stringify({
+                "email": email.value,
+                "password": password.value
+            });
 
-        const result = await fetch(`${url.url}/api/login`, requestOptions)
-        const data = await result.json();
-        if (result.status > 199 && result.status < 300) {
-            localStorage.setItem('token', data.data.token);
-            user.token = data.data.token;
-            router.push({name: 'admin-tasks'})
-        } else {
-            if (result.status == 422) {
-                downloadError(data.error.errors, errors)
+            const requestOptions = {
+                method: "POST",
+                headers: myHeaders,
+                body: raw,
+                redirect: "follow"
+            };
+
+            const result = await fetch(`${url.url}/api/login`, requestOptions)
+            const data = await result.json();
+            if (result.status > 199 && result.status < 300) {
+                localStorage.setItem('token', data.data.token);
+                localStorage.setItem('role', data.data.role);
+                localStorage.setItem('email', data.data.email);
+                user.token = data.data.token;
+                user.role = data.data.role;
+                user.email = data.data.email;
+                router.push({name: 'tasks'})
+            } else {
+                if (result.status == 422) {
+                    downloadError(data.error.errors, errors)
+                }
+                if (result.status == 401) {
+                    errors.value.password = 'login failed'
+                }
             }
-            if (result.status == 401) {
-                errors.value.password = 'login failed'
-            }
+        } catch (e) {
+            console.log(e)
         }
 
     }

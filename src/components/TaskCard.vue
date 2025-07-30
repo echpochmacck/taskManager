@@ -24,13 +24,15 @@
             Создано: {{ task.created_at }}
         </div>
 
-        <div v-if="users && users.length" class="mt-2">
+        <div class="mt-2">
             <div class="text-muted" style="font-size: 0.8rem;">Пользователи:</div>
             <div class="d-flex flex-wrap gap-2 mt-1">
-                <span v-for="user in users" :key="user.email"
-                    style="font-size: 0.85rem; padding: 2px 8px; border-radius: 999px; background-color: #f2f2f2;">
-                    {{ user.email }}
+                <span class="d-flex align-items-center user-span" v-for="user in users" :key="user.email">
+                    {{ user}}
                 </span>
+                <button class="btn btn-outline-primary"
+                    v-if="task.status_title != 'finished' && (!users || !users.includes(email))"
+                    @click.prevent="emit('fetchSub', task.id)">join task</button>
             </div>
         </div>
     </div>
@@ -39,19 +41,30 @@
 
 </template>
 <script setup>
-    import {defineProps} from 'vue';
+    import {defineProps, ref, defineEmits} from 'vue';
     const props = defineProps([
         'users',
-        'task'
+        'task',
+        'email',
+        'url'
     ]);
+    const emit = defineEmits(['fetchSub'])
+
 
 </script>
-<style>
-   
+<style scoped>
     .task-box {
         transition: .5s;
+
         &:hover {
             transform: scale(1.05);
         }
+    }
+
+    .user-span {
+        font-size: 0.85rem;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background-color: #f2f2f2;
     }
 </style>

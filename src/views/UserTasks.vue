@@ -14,10 +14,13 @@
 
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
                 <div class="col" v-for="(task, index) in tasks" :key="index">
-                    <TaskCard :task="task" :users="task.users" />
+                    <TaskCard :task="task" :users="task.users" :email="user.email" />
                 </div>
             </div>
 
+        </div>
+        <div v-if="!tasks && !isLoading" class="d-flex align-items-center justify-content-center">
+            <h2>У вас пока нет задач 🥰🥰🥰🥰</h2>
         </div>
 
         <Loader v-if="isLoading" />
@@ -53,7 +56,7 @@
                 tasks.value = data.data.tasks
                 isLoading.value = false
             }
-        } catch {
+        } catch (e){
             console.log(e)
         } finally {
             isLoading.value = false
