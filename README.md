@@ -1,29 +1,41 @@
-# .
+# 🧩 Task Manager
 
-This template should help get you started developing with Vue 3 in Vite.
+**Task Manager** is a simple and responsive task manager with a drag & drop interface, built on a modern tech stack.
 
-## Recommended IDE Setup
+---
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## 📦 Project Structure
 
-## Customize configuration
+This repository is organized into two branches:
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+- `front` — **Client-side (Vue 3 + Vite)**
+- `api` — **Server-side (Yii2 + WebSockets using Ratchet & Redis)**
 
-## Project Setup
+---
 
-```sh
-npm install
-```
+## 🖥️ Client-side (`front`)
 
-### Compile and Hot-Reload for Development
+**Tech stack:**
+- [Vue 3](https://vuejs.org/)
+- [Vite](https://vitejs.dev/)
+- [Bootstrap 5](https://getbootstrap.com/) — for responsive and fast UI development
 
-```sh
-npm run dev
-```
+---
 
-### Compile and Minify for Production
+## ⚙️ Server-side (`api`)
 
-```sh
-npm run build
-```
+**Tech stack:**
+- [Yii2 Framework](https://www.yiiframework.com/)
+- [Ratchet PHP](http://socketo.me/) — WebSocket server
+- [Redis](https://redis.io/) — Pub/Sub system for real-time communication
+
+---
+
+## 🛠️ Installation
+
+> Install separately for each branch (`front` and `api`)
+
+### Clone the repository
+
+```bash
+git clone https://github.com/your-username/your-repo.git
