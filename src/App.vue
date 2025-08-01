@@ -1,15 +1,38 @@
 <script setup>
   import {RouterLink, RouterView} from 'vue-router'
   import {useUserStore} from '@/stores/user.js'
+  import {useUrlStore} from '@/stores/url.js'
+  import {useRouter} from 'vue-router'
   import HelloWorld from './components/HelloWorld.vue'
   const ws = new WebSocket('ws://localhost:8080');
   const user = useUserStore();
+  const url = useUrlStore();
+  const router = useRouter();
   ws.addEventListener('open', () => {
     console.log('opened')
   })
   ws.addEventListener('message', (data) => {
     console.log('got message')
   })
+  async function logout() {
+    try {
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", "Bearer " + user.token);
+
+      const requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+        redirect: "follow"
+      };
+
+      const result = await fetch(`${url.url}/api/logout`, requestOptions)
+      localStorage.clear();
+      user.clear();
+      router.push({name: 'login'})
+    } catch (e) {
+      console.log(e)
+    }
+  }
 </script>
 
 <template>
@@ -37,6 +60,9 @@
             </li>
             <li class="nav-item" v-if="user.token">
               <router-link class="nav-link" :to="{name:'user-tasks'}">My tasks</router-link>
+            </li>
+            <li class="nav-item" v-if="user.token">
+              <a class="nav-link" @click.prevent="logout">Logout</a>
             </li>
 
             <!-- <li class="nav-item" v-if="user.token">
@@ -95,6 +121,10 @@
 </template>
 
 <style scoped>
+  .nav-link {
+    cursor: pointer;
+  }
+
   .router-view {
     flex: 1;
   }

@@ -5,5 +5,10 @@ export const useUserStore = defineStore("user", () => {
   const token = ref(localStorage.getItem("token") || null);
   const email = ref(localStorage.getItem("email") || null);
   const role = ref(localStorage.getItem("role") || null);
-  return { token, role, email }
+  function clear() {
+    token.value = "";
+    email.value = "";
+    role.value = "";
+  }
+  return { token, role, email, clear };
 });
