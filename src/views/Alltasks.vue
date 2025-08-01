@@ -26,37 +26,7 @@
         <Loader v-if="isLoading" />
     </section>
 
-    <section class="container py-5" v-if="user.role == 'admin'">
-        <!-- Форма создания задачи -->
-        <h2 class="mb-4">Создание новой задачи</h2>
-        <form class="card p-4 shadow-sm bg-white">
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="title" class="form-label">Заголовок</label>
-                    <input type="text" class="form-control" id="title" placeholder="Введите заголовок">
-                </div>
-                <div class="col-md-6">
-                    <label for="deadline" class="form-label">Дедлайн</label>
-                    <input type="date" class="form-control" id="deadline">
-                </div>
-            </div>
-            <div class="mb-3">
-                <label for="description" class="form-label">Описание</label>
-                <textarea class="form-control" id="description" rows="3" placeholder="Описание задачи"></textarea>
-            </div>
-            <div class="mb-3">
-                <label for="category" class="form-label">Категория</label>
-                <select class="form-select" id="category">
-                    <option selected>Выберите категорию</option>
-                    <option value="1">Общая</option>
-                    <option value="2">Срочная</option>
-                    <option value="3">Личное</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Создать задачу</button>
-        </form>
-
-    </section>
+ 
 
 </template>
 <script setup>

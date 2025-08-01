@@ -53,6 +53,22 @@ const router = createRouter({
         }
       },
     },
+    {
+      path: "/admin",
+      name: "admin",
+      component: () => import("../views/Admin.vue"),
+      beforeEnter: (to, from, next) => {
+        if (localStorage.getItem("token")) {
+          if (localStorage.getItem("role") == "admin") {
+            next();
+          } else {
+            next({ name: "tasks" });
+          }
+        } else {
+          next({ name: "login" });
+        }
+      },
+    },
 
     {
       path: "/:pathMatch(.*)*",

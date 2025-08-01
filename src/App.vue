@@ -65,9 +65,9 @@
               <a class="nav-link" @click.prevent="logout">Logout</a>
             </li>
 
-            <!-- <li class="nav-item" v-if="user.token">
-            <router-link class="nav-link" :to="{name:'admin-tasks'}">Admin</router-link> -->
-            <!-- </li> -->
+            <li class="nav-item" v-if="user.token && user.role == 'admin' ">
+              <router-link class="nav-link" :to="{name:'admin'}">Admin</router-link>
+            </li>
           </ul>
         </div>
       </div>
