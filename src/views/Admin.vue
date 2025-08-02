@@ -78,7 +78,7 @@
     const title = ref('test vue');
     const description = ref('test vue');
     // дописать форматирование дат + категории мб сделать надо все таки
-    const deadline = ref('2044-12-12');
+    const deadline = ref('');
     const users = ref('');
     const taskUsers = ref([]);
     const selected = ref('');
@@ -127,10 +127,10 @@
 
             const raw = JSON.stringify({
                 "category_id": 2,
-                "deadline": deadline.value,
+                "deadline": formatDateToSQL(deadline.value),
                 "description": description.value,
                 "title": title.value,
-                "users": taskUsers.value.length ? taskUsers.value.map((x) => x.id) : null
+                "users": taskUsers.value.length ? taskUsers.value.map((x) => x.id) : []
             });
 
             const requestOptions = {
@@ -148,6 +148,15 @@
         } catch (e) {
             console.log(e)
         }
+        function formatDateToSQL(str) {
+            const date = new Date(str);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${day}-${month}`;
+        }
+
+
     }
 
 </script>

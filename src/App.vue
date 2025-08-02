@@ -11,6 +11,9 @@
   ws.addEventListener('open', () => {
     console.log('opened')
   })
+  ws.addEventListener('message', () => {
+    alert('admin создал новую задачу');
+  })
   ws.addEventListener('message', (data) => {
     console.log('got message')
   })
