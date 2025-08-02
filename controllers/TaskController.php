@@ -82,11 +82,13 @@ class TaskController extends \yii\rest\ActiveController
             if ($model->validate()) {
                 $model->status_id = Status::getStatusId('active');
                 $model->save(false);
-                foreach ($model->users as $user) {
-                    $TaskUser = new TaskUser();
-                    $TaskUser->user_id = $user;
-                    $TaskUser->task_id = $model->id;
-                    $TaskUser->save(false);
+                if ($model->users) {
+                    foreach ($model->users as $user) {
+                        $TaskUser = new TaskUser();
+                        $TaskUser->user_id = $user;
+                        $TaskUser->task_id = $model->id;
+                        $TaskUser->save(false);
+                    }
                 }
                 $redis = new \Redis();
                 $redis->connect('127.127.126.56', 6379);
@@ -178,9 +180,9 @@ class TaskController extends \yii\rest\ActiveController
         $tasks = Task::getUsersAll(Yii::$app->user->id);
         return $this->asJson([
             'data' => [
-                'tasks' => 
-                    !empty($tasks) ? $tasks : null
-                
+                'tasks' =>
+                !empty($tasks) ? $tasks : null
+
             ],
             'code' => 200,
             'message' => 'list of user tasks'

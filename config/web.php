@@ -91,7 +91,7 @@ $config = [
                 'OPTIONS api/login' => 'user/options',
                 'GET api/logout' => 'user/logout',
                 'OPTIONS api/logout' => 'user/options',
-                'GET api/tasks/users' => 'user/get-users',
+                'GET api/users' => 'user/get-users',
                 'OPTIONS api/users' => 'user/options',
                 // Task routes
                 [
