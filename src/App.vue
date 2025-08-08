@@ -3,20 +3,27 @@
   import {useUserStore} from '@/stores/user.js'
   import {useUrlStore} from '@/stores/url.js'
   import {useRouter} from 'vue-router'
-  import HelloWorld from './components/HelloWorld.vue'
+  import {ref, useTemplateRef, onMounted, nextTick} from 'vue'
+  import Toast from '@/components/Toast.vue'
+
   const ws = new WebSocket('ws://localhost:8080');
   const user = useUserStore();
   const url = useUrlStore();
   const router = useRouter();
-  ws.addEventListener('open', () => {
-    console.log('opened')
+  const isToast = ref(false);
+  const isToastVisible = ref(false)
+  const toast = ref(null) // заменяем useTemplateRef, оно устаревшее и не нужно
+
+  onMounted(() => {
+    ws.addEventListener('open', async () => {
+    })
+    ws.addEventListener('message', async () => {
+      isToastVisible.value = true
+      await nextTick()
+      fade()
+    })
   })
-  ws.addEventListener('message', () => {
-    alert('admin создал новую задачу');
-  })
-  ws.addEventListener('message', (data) => {
-    console.log('got message')
-  })
+
   async function logout() {
     try {
       const myHeaders = new Headers();
@@ -35,6 +42,22 @@
     } catch (e) {
       console.log(e)
     }
+
+  }
+
+
+  function fade() {
+
+    setTimeout(() => {
+      toast.value.$el.style.opacity = '1';
+      toast.value.$el.style.transition = '1000ms';
+      toast.value.$el.style.opacity = '0';
+      setTimeout(() => {
+        toast.value.$el.style.display = 'none';
+        isToastVisible.value = false
+      }, 2000)
+    }, 1000);
+
   }
 </script>
 
@@ -42,7 +65,7 @@
 
   <div class="d-flex flex-column align-items-center w-100 my-body">
 
-
+    <Toast ref="toast" v-if="isToastVisible" />
     <nav class="navbar header navbar-expand-lg navbar-light sticky-top  border-bottom border-primary w-100">
       <div class="container">
         <router-link class="navbar-brand" to="/">Task Manager</router-link>
